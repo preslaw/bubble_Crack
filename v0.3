@@ -1,0 +1,83 @@
+import pygame
+import random
+
+WIDTH = 800
+HEIGHT = 600
+
+CZARNY = (50,150,250)
+WHITE = (255,255,255)
+pygame.init()
+
+ekran = pygame.display.set_mode([WIDTH,HEIGHT])
+
+lista_duszkow = pygame.sprite.Group()
+lista_duszkow_spadnietych = pygame.sprite.Group()
+
+bubleCrack = "oO0+. "
+
+class SnowFlake(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.flakeSize = random.randint(24,48)
+        font = pygame.font.SysFont("freesansbold",self.flakeSize)
+        tekst = font.render("o",True,WHITE)
+        self.image = tekst
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randint(0,WIDTH)
+        self.rect.y = random.randint (HEIGHT,HEIGHT)
+        self.downSpeed = -random.randint(2,6)
+        self.crackPoint = random.randint(350,550)
+
+    def update(self):
+        self.rect.y +=self.downSpeed
+    
+    def changeLetter(self,letter):
+      font = pygame.font.SysFont("freesansbold",self.flakeSize)
+      tekst = font.render(letter,True,WHITE)
+      self.image = tekst
+    
+      
+
+dalej = True 
+
+licznik = pygame.time.Clock()
+
+flakesFlurry = []
+
+for a in range (100):
+    a = SnowFlake()
+    lista_duszkow.add(a)
+
+pileOfSnowflakes =10
+
+while dalej == True:
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            dalej = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if pygame.mouse.get_pressed()[0]:
+                dalej = False
+    ekran.fill(CZARNY)
+    lista_duszkow.draw(ekran)
+    lista_duszkow.update()
+    for a in lista_duszkow:
+        if a.crackPoint-10<a.rect.y<a.crackPoint:
+          a.changeLetter('O') 
+        if a.crackPoint-20<a.rect.y<a.crackPoint-10:
+          a.changeLetter('0') 
+        if a.crackPoint-30<a.rect.y<a.crackPoint-20:
+          a.changeLetter('+')
+        if a.crackPoint-40<a.rect.y<a.crackPoint-30:
+          a.changeLetter('.')
+        if a.crackPoint-50<a.rect.y<a.crackPoint-40:
+          lista_duszkow.remove(a)
+          b  = SnowFlake()
+          lista_duszkow.add(b)
+    if (len(lista_duszkow_spadnietych)%20==0):
+        pileOfSnowflakes +=1
+    pygame.display.update()
+    licznik.tick(30)
+
+pygame.quit()
